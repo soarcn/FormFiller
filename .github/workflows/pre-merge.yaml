@@ -28,7 +28,7 @@ jobs:
         with:
           path: ~/.gradle/wrapper/
           key: cache-gradle-wrapper
-      - name: Build Android project
-          uses: vgaidarji/android-github-actions-build@v1.0.1
-          with:
+      - name: "Build Android project"
+        uses: vgaidarji/android-github-actions-build@v1.0.1
+        with:
             args: "./gradlew build"
