@@ -14,7 +14,7 @@ class DemoApp : Application() {
                 .keyCode(KeyEvent.KEYCODE_F)
                 .doubleTap()
                 .enableScenariosSwitcher()
-                .bullet {
+                .scenario {
                     id(R.id.username, "username")
                     id(R.id.password, "password")
                     id(R.id.confimrpassword, "password")
@@ -23,7 +23,7 @@ class DemoApp : Application() {
                     id(R.id.address, "Sydney,Australia")
 
                 }
-                .bullet("Unhappy") {
+                .scenario("Unhappy") {
                     id(R.id.username, "wrong")
                     id(R.id.password, "wrong")
                     id(R.id.confimrpassword, "wrong")
