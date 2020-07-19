@@ -14,21 +14,25 @@ class FormFiller internal constructor(
     , internal val doubleTap: Boolean,
     internal val enableSwitcher: Boolean
 ) {
-    private var currentScenario: Scenario = scenarios[DEFAULT_SCENARIO] ?: Scenario()
+    internal var currentScenario: Scenario = scenarios[DEFAULT_SCENARIO] ?: Scenario()
 
     internal fun fill(view: EditText) {
         currentScenario.fill(view)
     }
 
-    fun changeScenario(scenario: String) {
-        scenarios[scenario]?.apply {
-            currentScenario = scenarios[DEFAULT_SCENARIO]?.merge(this) ?: this
+    fun changeScenario(scenarioName: String) {
+        val scenario = scenarios[scenarioName]
+        if (scenario == null) {
+            throw IllegalArgumentException("Invalid scenario name")
+        } else {
+            currentScenario = scenarios[DEFAULT_SCENARIO]?.merge(scenario) ?: scenario
         }
+
     }
 
     companion object {
         private val DEFAULT_SCENARIO = "Default"
-        private var instance: FormFiller? = null
+        internal var instance: FormFiller? = null
         internal fun getInstant() = instance!!
     }
 
@@ -76,7 +80,7 @@ class FormFiller internal constructor(
             return this
         }
 
-        fun build() {
+        fun build(): FormFiller {
             if (instance == null) {
                 if (keycodes.isEmpty() && !doubleTap) {
                     throw IllegalArgumentException("You must define one trigger by calling keyCode() or doubleTap()")
@@ -86,13 +90,14 @@ class FormFiller internal constructor(
                 FormFiller.instance = instance
                 application.registerActivityLifecycleCallbacks(FormFillerActivityLifeCycle(instance))
             }
+            return instance!!
         }
     }
 
     class Scenario {
-        private var tags = mutableMapOf<String, Pair<CharSequence?, Callback?>>()
-        private val ids = mutableMapOf<Int, Pair<CharSequence?, Callback?>>()
-        private val hints = mutableMapOf<String, Pair<CharSequence?, Callback?>>()
+        internal var tags = mutableMapOf<String, Pair<CharSequence?, Callback?>>()
+        internal val ids = mutableMapOf<Int, Pair<CharSequence?, Callback?>>()
+        internal val hints = mutableMapOf<String, Pair<CharSequence?, Callback?>>()
 
         fun id(id: Int, value: CharSequence? = null, block: Callback? = null) {
             ids[id] = value to block
@@ -145,7 +150,6 @@ class FormFiller internal constructor(
             }
         }
     }
-
 }
 
 private class FormFillerActivityLifeCycle(private val filler: FormFiller) :
