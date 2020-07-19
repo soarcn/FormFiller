@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+apply plugin: "com.vanniktech.maven.publish"
 
 android {
     compileSdkVersion 29
@@ -29,4 +29,17 @@ dependencies {
     testImplementation 'junit:junit:4.13'
     testImplementation "io.mockk:mockk:1.10.0"
     testImplementation 'com.google.truth:truth:1.0.1'
+}
+
+mavenPublish {
+    targets {
+        // Modify the existing uploadArchives task
+        uploadArchives {
+            releaseRepositoryUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            snapshotRepositoryUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+            repositoryUsername = null
+            repositoryPassword = null
+        }
+    }
+
 }

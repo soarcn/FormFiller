@@ -71,7 +71,7 @@ class FormFillerBuilderTest {
     @Test
     fun useDefaultAsScenarioName() {
         try {
-            var filler = FormFiller.Builder(app).doubleTap()
+            FormFiller.Builder(app).doubleTap()
                 .scenario("Default") {
                     id(1, "test")
                 }

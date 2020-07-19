@@ -1,9 +1,11 @@
 FormFiller
 =========
+![Maven](https://maven-badges.herokuapp.com/maven-central/com.cocosw/formfiller/badge.png?style=plastic)
 
-Android helper library to populate form with defined data-set
+Android helper library to populate form fields with predefined data set
 
 ![Sample](https://github.com/soarcn/FormFiller/blob/master/arts/formfiller.gif?raw=true)
+
 
 Usage
 =======
