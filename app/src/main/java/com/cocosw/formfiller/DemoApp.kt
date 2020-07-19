@@ -2,12 +2,14 @@ package com.cocosw.formfiller
 
 import android.app.Application
 import android.view.KeyEvent
+import com.mooveit.library.Fakeit
 
 class DemoApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
         if (BuildConfig.DEBUG)
+            Fakeit.init()
             FormFiller.Builder(this)
                 .keyCode(KeyEvent.KEYCODE_F)
                 .doubleTap()
@@ -25,6 +27,9 @@ class DemoApp : Application() {
                     id(R.id.username, "wrong")
                     id(R.id.password, "wrong")
                     id(R.id.confimrpassword, "wrong")
+                    id(R.id.name) {
+                        it.setText(Fakeit.name().lastName())
+                    }
                 }
                 .build()
     }
