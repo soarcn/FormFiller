@@ -12,7 +12,7 @@ jobs:
   gradle:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [macos-latest]
     runs-on: ${{ matrix.os }}
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
     steps:
@@ -28,5 +28,7 @@ jobs:
         with:
           path: ~/.gradle/wrapper/
           key: cache-gradle-wrapper
-      - name: Stop Gradle
-        run: ./gradlew --stop
+      - name: Build Android project
+          uses: vgaidarji/android-github-actions-build@v1.0.1
+          with:
+            args: "./gradlew build"
