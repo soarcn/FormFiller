@@ -58,12 +58,12 @@ class FormFiller(
             return this
         }
 
-        fun bullet(block: Scenario.() -> Unit): Builder {
+        fun scenario(block: Scenario.() -> Unit): Builder {
             scenarios[DEFAULT_SCENARIO] = Scenario().apply(block)
             return this
         }
 
-        fun bullet(name: String, block: Scenario.() -> Unit): Builder {
+        fun scenario(name: String, block: Scenario.() -> Unit): Builder {
             if (name == DEFAULT_SCENARIO) {
                 throw IllegalArgumentException("Please do not use [Default] for scenario name")
             }

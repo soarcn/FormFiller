@@ -19,7 +19,7 @@ class DemoApp : Application() {
                 .keyCode(KeyEvent.KEYCODE_F)
                 // Fill the form by double tapping on ui    
                 .doubleTap()
-                .bullet {
+                .scenario {
                     id(R.id.username, "username")
                     id(R.id.password, "password")
                 }
@@ -39,11 +39,11 @@ Define different data-set and switch between them inside the app
                 .doubleTap()
                 // Enable scenario switcher and open ui by long pressing with 2 fingers on ui
                 .enableScenariosSwitcher()
-                .bullet {
+                .scenario {
                     id(R.id.username, "username")
                     id(R.id.password, "password")
                 }
-                .bullet("Unhappy") {
+                .scenario("Unhappy") {
                     id(R.id.username, "wrong")
                     id(R.id.password, "wrong")
                 }
