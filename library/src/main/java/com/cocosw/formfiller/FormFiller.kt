@@ -14,23 +14,17 @@ class FormFiller(
     , internal val doubleTap: Boolean,
     internal val enableSwitcher: Boolean
 ) {
-    private var currentScenario: String = DEFAULT_SCENARIO
+    private var currentScenario: Scenario = scenarios[DEFAULT_SCENARIO] ?: Scenario()
 
     internal fun fill(view: EditText) {
-        var filled = false
-        if (currentScenario != DEFAULT_SCENARIO) {
-            filled = scenarios[currentScenario]?.fill(view) ?: false
-        }
-        if (!filled)
-            scenarios[DEFAULT_SCENARIO]?.fill(view)
+        currentScenario.fill(view)
     }
 
     fun changeScenario(scenario: String) {
-        if (scenarios.containsKey(scenario)) {
-            currentScenario = scenario
+        scenarios[scenario]?.apply {
+            currentScenario = scenarios[DEFAULT_SCENARIO]?.merge(this) ?: this
         }
     }
-
 
     companion object {
         private val DEFAULT_SCENARIO = "Default"
@@ -92,7 +86,7 @@ class FormFiller(
     }
 
     class Scenario {
-        private val tags = mutableMapOf<String, Pair<CharSequence?, Callback?>>()
+        private var tags = mutableMapOf<String, Pair<CharSequence?, Callback?>>()
         private val ids = mutableMapOf<Int, Pair<CharSequence?, Callback?>>()
         private val hints = mutableMapOf<String, Pair<CharSequence?, Callback?>>()
 
@@ -133,6 +127,18 @@ class FormFiller(
             }
             return false
 
+        }
+
+        internal fun merge(another: Scenario): Scenario {
+            val self = this
+            return Scenario().apply {
+                tags.putAll(self.tags)
+                tags.putAll(another.tags)
+                ids.putAll(self.ids)
+                ids.putAll(another.ids)
+                hints.putAll(self.hints)
+                hints.putAll(another.hints)
+            }
         }
     }
 
