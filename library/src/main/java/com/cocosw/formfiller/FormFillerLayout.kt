@@ -37,7 +37,7 @@ internal class FormFillerLayout(
             }
 
             override fun onLongPress(e: MotionEvent?) {
-                if (filler.enableSwitcher && e?.pointerCount == 1 && filler.scenarios.size > 1) {
+                if (filler.enableSwitcher && e?.pointerCount == 2 && filler.scenarios.size > 1) {
                     val list = filler.scenarios.keys.toTypedArray()
                     AlertDialog.Builder(context).setItems(list) { _: DialogInterface, i: Int ->
                         filler.changeScenario(list[i])

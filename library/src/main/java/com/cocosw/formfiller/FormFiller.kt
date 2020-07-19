@@ -8,7 +8,7 @@ import android.view.View.NO_ID
 import android.view.ViewGroup
 import android.widget.EditText
 
-class FormFiller(
+class FormFiller internal constructor(
     internal val scenarios: Map<String, Scenario>
     , internal val keycodes: Map<Int, Boolean>
     , internal val doubleTap: Boolean,
@@ -78,6 +78,10 @@ class FormFiller(
 
         fun build() {
             if (instance == null) {
+                if (keycodes.isEmpty() && !doubleTap) {
+                    throw IllegalArgumentException("You must define one trigger by calling keyCode() or doubleTap()")
+                }
+
                 val instance = FormFiller(scenarios, keycodes, doubleTap, enableSwitcher)
                 FormFiller.instance = instance
                 application.registerActivityLifecycleCallbacks(FormFillerActivityLifeCycle(instance))
