@@ -1,14 +1,15 @@
-package com.cocosw.formfiller
+package com.cocosw.formfiller.example
 
 import android.app.Application
 import android.view.KeyEvent
+import com.cocosw.formfiller.FormFiller
 import com.mooveit.library.Fakeit
 
 class DemoApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        if (BuildConfig.DEBUG)
+        if (BuildConfig.DEBUG) {
             Fakeit.init()
             FormFiller.Builder(this)
                 .keyCode(KeyEvent.KEYCODE_F)
@@ -32,5 +33,6 @@ class DemoApp : Application() {
                     }
                 }
                 .build()
+        }
     }
 }

@@ -27,17 +27,17 @@ internal class FormFillerLayout(
     private val filler = FormFiller.getInstant()
     private val mDetector =
         GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
-            override fun onDown(e: MotionEvent?): Boolean {
+            override fun onDown(e: MotionEvent): Boolean {
                 return true
             }
 
-            override fun onDoubleTap(e: MotionEvent?): Boolean {
+            override fun onDoubleTap(e: MotionEvent): Boolean {
                 triggerFormFill()
                 return true
             }
 
-            override fun onLongPress(e: MotionEvent?) {
-                if (filler.enableSwitcher && e?.pointerCount == 2 && filler.scenarios.size > 1) {
+            override fun onLongPress(e: MotionEvent) {
+                if (filler.enableSwitcher && e.pointerCount == 2 && filler.scenarios.size > 1) {
                     val list = filler.scenarios.keys.toTypedArray()
                     AlertDialog.Builder(context).setItems(list) { _: DialogInterface, i: Int ->
                         filler.changeScenario(list[i])
@@ -46,7 +46,7 @@ internal class FormFillerLayout(
             }
         })
 
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
+    override fun onTouchEvent(event: MotionEvent): Boolean {
         return if (!filler.doubleTap)
             super.onTouchEvent(event)
         else {

@@ -5,7 +5,7 @@ This context describes developer-defined data sets and the application inputs th
 ## Language
 
 **Fill Target**:
-An application input exposed to FormFiller with a stable identifier and the ability to accept replacement text.
+An application input exposed through Android's accessibility tree with a stable identifier and the ability to accept replacement text. FormFiller 2.0 can fill a target only on API 34 and above.
 _Avoid_: Control, widget, View, Composable
 
 **Target Tag**:
@@ -27,6 +27,10 @@ _Avoid_: Fill report, result object
 **Fill Trigger**:
 A developer action that asks FormFiller to apply the current Scenario to the current Activity.
 _Avoid_: Gesture, event hook
+
+**Fill Run**:
+The work started by one Fill Trigger for one Activity, including target discovery, Fill Value resolution, at most one retry, and redacted diagnostics. An Activity has at most one active Fill Run and one latest-wins pending Fill Run.
+_Avoid_: Fill session, fill request, operation
 
 **Scenario**:
 A named set of Target Tags or resource IDs and the Fill Values assigned to them.

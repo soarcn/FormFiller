@@ -1,9 +1,9 @@
-package com.cocosw.formfiller.ui.login
+package com.cocosw.formfiller.example.ui.login
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 
-import com.cocosw.formfiller.R
+import com.cocosw.formfiller.example.R
 
 class LoginActivity : AppCompatActivity() {
 
