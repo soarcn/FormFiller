@@ -7,6 +7,7 @@ import android.view.View
 import android.view.View.NO_ID
 import android.view.ViewGroup
 import android.widget.EditText
+import java.util.Collections
 
 class FormFiller internal constructor(
     internal val scenarios: Map<String, Scenario>
@@ -16,9 +17,24 @@ class FormFiller internal constructor(
 ) {
     internal var currentScenario: Scenario = scenarios[DEFAULT_SCENARIO] ?: Scenario()
 
-    internal fun fill(view: EditText) {
-        currentScenario.fill(view)
+    internal fun fill(view: EditText, scenario: ScenarioSnapshot): Boolean {
+        val entry = scenario.entries.firstOrNull {
+            when (val selector = it.selector) {
+                is ScenarioSelector.TargetTag -> view.tag == selector.value
+                is ScenarioSelector.ResourceId -> view.id != NO_ID && view.id == selector.value
+            }
+        } ?: return false
+
+        return when (val resolution = entry.resolve()) {
+            is FillValueResolution.Value -> {
+                view.setText(resolution.fillValue)
+                true
+            }
+            FillValueResolution.ProviderFailure -> false
+        }
     }
+
+    internal fun newScenarioSnapshot(): ScenarioSnapshot = currentScenario.newSnapshot()
 
     fun changeScenario(scenarioName: String) {
         val scenario = scenarios[scenarioName]
@@ -95,46 +111,35 @@ class FormFiller internal constructor(
     }
 
     class Scenario {
-        internal var tags = mutableMapOf<String, Pair<CharSequence?, Callback?>>()
-        internal val ids = mutableMapOf<Int, Pair<CharSequence?, Callback?>>()
-        internal val hints = mutableMapOf<String, Pair<CharSequence?, Callback?>>()
+        internal val tags = linkedMapOf<String, FillValueSource>()
+        internal val ids = linkedMapOf<Int, FillValueSource>()
 
-        fun id(id: Int, value: CharSequence? = null, block: Callback? = null) {
-            ids[id] = value to block
+        fun id(id: Int, value: CharSequence) {
+            ids[id] = FillValueSource.Static(value)
         }
 
-        fun tag(tag: String, value: CharSequence? = null, block: Callback? = null) {
-            tags[tag] = value to block
+        fun id(id: Int, provider: ValueProvider) {
+            ids[id] = FillValueSource.Provided(provider)
         }
 
-        private fun hint(tag: String, value: CharSequence? = null, block: Callback? = null) {
-            hints[tag] = value to block
+        fun tag(tag: String, value: CharSequence) {
+            tags[tag] = FillValueSource.Static(value)
         }
 
-        internal fun fill(view: EditText): Boolean {
-            if (tags.isNotEmpty()) {
-                view.tag?.apply {
-                    tags[this]?.apply {
-                        if (first != null) {
-                            view.setText(first)
-                        }
-                        second?.invoke(view)
-                        return true
-                    }
+        fun tag(tag: String, provider: ValueProvider) {
+            tags[tag] = FillValueSource.Provided(provider)
+        }
+
+        internal fun newSnapshot(): ScenarioSnapshot {
+            val entries = buildList {
+                tags.forEach { (tag, source) ->
+                    add(ScenarioEntry(ScenarioSelector.TargetTag(tag), source))
+                }
+                ids.forEach { (id, source) ->
+                    add(ScenarioEntry(ScenarioSelector.ResourceId(id), source))
                 }
             }
-            if (ids.isNotEmpty() && NO_ID != view.id) {
-                view.id.apply {
-                    ids[this]?.apply {
-                        if (first != null) {
-                            view.setText(first)
-                        }
-                        second?.invoke(view)
-                        return true
-                    }
-                }
-            }
-            return false
+            return ScenarioSnapshot(entries)
 
         }
 
@@ -145,8 +150,6 @@ class FormFiller internal constructor(
                 tags.putAll(another.tags)
                 ids.putAll(self.ids)
                 ids.putAll(another.ids)
-                hints.putAll(self.hints)
-                hints.putAll(another.hints)
             }
         }
     }
@@ -187,4 +190,51 @@ private class FormFillerActivityLifeCycle(private val filler: FormFiller) :
     override fun onActivityResumed(activity: Activity) {}
 }
 
-private typealias Callback = (EditText) -> Unit
+internal sealed interface FillValueSource {
+    data class Static(val value: CharSequence) : FillValueSource
+    data class Provided(val provider: ValueProvider) : FillValueSource
+}
+
+internal sealed interface ScenarioSelector {
+    data class TargetTag(val value: String) : ScenarioSelector
+    data class ResourceId(val value: Int) : ScenarioSelector
+}
+
+internal data class ScenarioEntry(
+    val selector: ScenarioSelector,
+    val source: FillValueSource
+)
+
+internal sealed interface FillValueResolution {
+    data class Value(val fillValue: CharSequence) : FillValueResolution
+    data object ProviderFailure : FillValueResolution
+}
+
+internal class ResolvedScenarioEntry internal constructor(
+    val selector: ScenarioSelector,
+    private val source: FillValueSource
+) {
+    private var cachedResolution: FillValueResolution? = when (source) {
+        is FillValueSource.Static -> FillValueResolution.Value(source.value.toString())
+        is FillValueSource.Provided -> null
+    }
+
+    fun resolve(): FillValueResolution {
+        cachedResolution?.let { return it }
+
+        val resolution = try {
+            val provider = (source as FillValueSource.Provided).provider
+            FillValueResolution.Value(provider.provide().toString())
+        } catch (_: Exception) {
+            FillValueResolution.ProviderFailure
+        }
+        cachedResolution = resolution
+        return resolution
+    }
+}
+
+internal class ScenarioSnapshot(entries: List<ScenarioEntry>) {
+    val entries: List<ResolvedScenarioEntry> = Collections.unmodifiableList(
+        entries.map { ResolvedScenarioEntry(it.selector, it.source) }
+    )
+}

@@ -29,7 +29,7 @@ class DemoApp : Application() {
                     id(R.id.password, "wrong")
                     id(R.id.confimrpassword, "wrong")
                     id(R.id.name) {
-                        it.setText(Fakeit.name().lastName())
+                        Fakeit.name().lastName()
                     }
                 }
                 .build()

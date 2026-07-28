@@ -22,17 +22,15 @@ class ScenarioTest {
             .scenario {
                 id(1, "test")
                 id(2) {
-
+                    "generated"
                 }
             }
             .build()
 
         assertThat(filler.currentScenario).isNotNull()
         assertThat(filler.currentScenario.ids).hasSize(2)
-        assertThat(filler.currentScenario.ids[1]?.first).isEqualTo("test")
-        assertThat(filler.currentScenario.ids[1]?.second).isNull()
-        assertThat(filler.currentScenario.ids[2]?.first).isNull()
-        assertThat(filler.currentScenario.ids[2]?.second).isNotNull()
+        assertThat(filler.currentScenario.ids[1]).isEqualTo(FillValueSource.Static("test"))
+        assertThat(filler.currentScenario.ids[2]).isInstanceOf(FillValueSource.Provided::class.java)
     }
 
     @Test
@@ -40,16 +38,15 @@ class ScenarioTest {
         var filler = FormFiller.Builder(app).doubleTap()
             .scenario {
                 tag("test", "test")
-                tag("block") {}
+                tag("block") { "generated" }
             }
             .build()
 
         assertThat(filler.currentScenario).isNotNull()
         assertThat(filler.currentScenario.tags).hasSize(2)
-        assertThat(filler.currentScenario.tags["test"]?.first).isEqualTo("test")
-        assertThat(filler.currentScenario.tags["test"]?.second).isNull()
-        assertThat(filler.currentScenario.tags["block"]?.first).isNull()
-        assertThat(filler.currentScenario.tags["block"]?.second).isNotNull()
+        assertThat(filler.currentScenario.tags["test"]).isEqualTo(FillValueSource.Static("test"))
+        assertThat(filler.currentScenario.tags["block"])
+            .isInstanceOf(FillValueSource.Provided::class.java)
     }
 
     @Test
@@ -81,13 +78,14 @@ class ScenarioTest {
         assertThat(filler.currentScenario).isNotNull()
         assertThat(filler.currentScenario.tags).hasSize(1)
         assertThat(filler.currentScenario.ids).isEmpty()
-        assertThat(filler.currentScenario.tags["test"]?.first).isEqualTo("test")
+        assertThat(filler.currentScenario.tags["test"]).isEqualTo(FillValueSource.Static("test"))
 
         filler.changeScenario("test")
 
         assertThat(filler.currentScenario.tags).hasSize(1)
         assertThat(filler.currentScenario.ids).hasSize(1)
 
-        assertThat(filler.currentScenario.tags["test"]?.first).isEqualTo("newtest")
+        assertThat(filler.currentScenario.tags["test"])
+            .isEqualTo(FillValueSource.Static("newtest"))
     }
 }

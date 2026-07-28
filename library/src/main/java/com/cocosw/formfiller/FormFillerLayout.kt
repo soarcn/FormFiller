@@ -89,17 +89,17 @@ internal class FormFillerLayout(
     }
 
     private fun triggerFormFill() {
-        findViews(context, this)
+        findViews(context, this, filler.newScenarioSnapshot())
     }
 
-    private fun findViews(context: Context, v: View) {
+    private fun findViews(context: Context, v: View, scenario: ScenarioSnapshot) {
         try {
             if (v is ViewGroup) {
                 for (i in 0 until v.childCount) {
-                    findViews(context, v.getChildAt(i))
+                    findViews(context, v.getChildAt(i), scenario)
                 }
             } else if (v is EditText) {
-                filler.fill(v)
+                filler.fill(v, scenario)
             }
         } catch (ignore: Exception) {
         }
