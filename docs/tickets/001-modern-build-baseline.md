@@ -29,6 +29,13 @@ accessibility engine or change the public filling behavior.
 - `JAVA_HOME='/Applications/Android Studio.app/Contents/jbr/Contents/Home' bash ./gradlew --no-daemon --gradle-user-home /private/tmp/formfiller-gradle check assemble`
 - Result: `BUILD SUCCESSFUL` (174 tasks).
 
+2026-07-28:
+
+- Updated the targetSdk 36 demo for Android 15 edge-to-edge enforcement using
+  `WindowCompat.enableEdgeToEdge`, `ProtectionLayout`, and a top
+  `ColorProtection` backed by `colorPrimaryDark`.
+- `check assemble` passed after the compatibility update (174 tasks).
+
 ## Notes
 
 `FormFillerLayout` remains until the later trigger-observer ticket removes the
