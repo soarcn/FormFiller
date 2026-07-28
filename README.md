@@ -4,7 +4,7 @@ FormFiller
 
 Android helper library to populate form fields with predefined data set
 
-![Sample](https://github.com/soarcn/FormFiller/blob/master/arts/formfiller.gif?raw=true)
+![Sample](https://github.com/soarcn/FormFiller/blob/main/arts/formfiller.gif?raw=true)
 
 
 Usage
